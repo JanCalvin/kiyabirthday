@@ -189,14 +189,16 @@
   }
   @keyframes floatBtn { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-
-  /* --- SCRAPBOOK 3D STYLES (RESPONSIF HP) --- */
-  .header { text-align: center; margin-bottom: 8px; }
-  .eyebrow { font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-soft); }
-  .title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.4rem; color: #fff; }
+  /* --- SCRAPBOOK 3D STYLES (RAMAH HP & ANTI KEPOTONG) --- */
+  .header { text-align: center; margin-bottom: 4px; }
+  .eyebrow { font-size: 0.58rem; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gold-soft); }
+  .title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.15rem; color: #fff; }
 
   .book-container {
-    width: 290px; height: 395px; position: relative; perspective: 1400px;
+    width: min(84vw, 265px);
+    height: min(62dvh, 340px);
+    position: relative; 
+    perspective: 1400px;
   }
   .page {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
@@ -207,9 +209,9 @@
     position: absolute; width: 100%; height: 100%; top: 0; left: 0;
     background-color: var(--paper);
     background-image: radial-gradient(rgba(160, 120, 85, 0.14) 1px, transparent 1px);
-    background-size: 14px 14px;
-    border: 2px solid var(--paper-border); border-radius: 10px; padding: 12px;
-    backface-visibility: hidden; box-shadow: inset 2px 0 8px rgba(0,0,0,0.05), 0 8px 16px rgba(0,0,0,0.3);
+    background-size: 12px 12px;
+    border: 2px solid var(--paper-border); border-radius: 8px; padding: 6px 8px;
+    backface-visibility: hidden; box-shadow: inset 2px 0 6px rgba(0,0,0,0.05), 0 6px 12px rgba(0,0,0,0.3);
     display: flex; flex-direction: column; justify-content: space-between; color: #4a3459;
     overflow: hidden;
   }
@@ -220,26 +222,16 @@
   #page1.flipped { z-index: 1; } #page2.flipped { z-index: 2; } #page3.flipped { z-index: 3; }
 
   .inner-border {
-    position: absolute; inset: 5px;
+    position: absolute; inset: 4px;
     border: 1px dashed rgba(160, 120, 85, 0.35);
-    border-radius: 6px; pointer-events: none; z-index: 1;
+    border-radius: 5px; pointer-events: none; z-index: 1;
   }
   .tape {
-    position: absolute; top: -6px; left: 50%; transform: translateX(-50%) rotate(-2deg);
-    width: 65px; height: 15px; background: rgba(226, 213, 195, 0.9);
+    position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(-2deg);
+    width: 50px; height: 12px; background: rgba(226, 213, 195, 0.9);
     border-left: 1px dashed rgba(160, 120, 85, 0.45);
     border-right: 1px dashed rgba(160, 120, 85, 0.45);
     z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-  }
-  .washi-pink {
-    position: absolute; width: 38px; height: 11px;
-    background: rgba(255, 142, 170, 0.45);
-    z-index: 6; pointer-events: none;
-  }
-  .washi-gold {
-    position: absolute; width: 38px; height: 11px;
-    background: rgba(243, 213, 132, 0.65);
-    z-index: 6; pointer-events: none;
   }
   .sticker {
     position: absolute; pointer-events: none; z-index: 6;
@@ -254,52 +246,53 @@
     background: #f3e6d3;
     border: 1px solid #dcc5a6;
     color: var(--purple-deep);
-    font-size: 0.52rem;
-    letter-spacing: 1px;
+    font-size: 0.45rem;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
-    padding: 2px 7px;
-    border-radius: 15px;
+    padding: 1px 5px;
+    border-radius: 10px;
     font-weight: 600;
   }
   .page-title-en {
     font-family: 'Playfair Display', serif;
-    font-size: 0.95rem;
+    font-size: 0.76rem;
     color: var(--purple-deep);
+    margin: 1px 0;
   }
   .divider-ornament {
     text-align: center;
-    font-size: 0.58rem;
+    font-size: 0.48rem;
     color: var(--gold);
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     opacity: 0.8;
   }
 
   .photo-frame {
     position: relative;
-    background: #fff; padding: 5px 5px 7px 5px; border: 1px solid #e2d5c3;
-    box-shadow: 0 3px 8px rgba(74, 52, 89, 0.08); border-radius: 4px; text-align: center;
+    background: #fff; padding: 3px 3px 5px 3px; border: 1px solid #e2d5c3;
+    box-shadow: 0 2px 5px rgba(74, 52, 89, 0.08); border-radius: 3px; text-align: center;
     z-index: 2;
   }
   .photo-box {
     width: 100%; background: #f2ebe0; border: 1px dashed var(--gold);
-    display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.72rem; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; color: var(--gold); overflow: hidden;
   }
-  .caption { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.68rem; color: var(--purple-deep); margin-top: 4px; }
+  .caption { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.55rem; color: var(--purple-deep); margin-top: 2px; }
   .note-box {
     position: relative; z-index: 2;
-    background: #fdf6e7; border-left: 3px solid var(--gold);
-    padding: 6px 8px; font-size: 0.65rem; color: var(--purple-deep); line-height: 1.35;
-    border-radius: 0 5px 5px 0;
+    background: #fdf6e7; border-left: 2.5px solid var(--gold);
+    padding: 4px 6px; font-size: 0.55rem; color: var(--purple-deep); line-height: 1.25;
+    border-radius: 0 4px 4px 0;
   }
 
-  .controls { margin-top: 10px; display: flex; gap: 12px; align-items: center; }
+  .controls { margin-top: 6px; display: flex; gap: 10px; align-items: center; }
   .btn {
-    background: #5c4270; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 16px;
-    border-radius: 18px; font-family: 'Poppins', sans-serif; font-size: 0.72rem; cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    background: #5c4270; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px;
+    border-radius: 15px; font-family: 'Poppins', sans-serif; font-size: 0.65rem; cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   }
   .btn:disabled { opacity: 0.4; cursor: default; }
-  .back-link { margin-top: 8px; color: #d0b5e8; font-size: 0.7rem; text-decoration: underline; cursor: pointer; }
+  .back-link { margin-top: 5px; color: #d0b5e8; font-size: 0.62rem; text-decoration: underline; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -383,23 +376,23 @@
         <div class="front">
           <div class="inner-border"></div>
           <div class="tape"></div>
-          <span class="sticker" style="top: 10px; left: 12px; font-size: 0.85rem; transform: rotate(-15deg);">🌻</span>
-          <span class="sticker" style="top: 10px; right: 12px; font-size: 0.8rem; transform: rotate(15deg);">✨</span>
+          <span class="sticker" style="top: 8px; left: 10px; font-size: 0.75rem; transform: rotate(-15deg);">🌻</span>
+          <span class="sticker" style="top: 8px; right: 10px; font-size: 0.7rem; transform: rotate(15deg);">✨</span>
 
-          <div style="text-align: center; margin-top: 2px; position: relative; z-index: 2;">
+          <div style="text-align: center; margin-top: 1px; position: relative; z-index: 2;">
             <span class="page-badge">Chapter 01</span>
-            <h2 class="page-title-en" style="margin-top: 2px;">The Beginning of Light</h2>
-            <p class="handwriting" style="font-size: 0.82rem;">~ made just for you ~</p>
+            <h2 class="page-title-en">The Beginning of Light</h2>
+            <p class="handwriting" style="font-size: 0.75rem; margin-top: -2px;">~ made just for you ~</p>
           </div>
 
-          <div class="photo-frame" style="transform: rotate(-1.5deg); margin: 2px 4px;">
-            <div class="photo-box" style="height: 115px;">
+          <div class="photo-frame" style="transform: rotate(-1.5deg); margin: 2px 2px;">
+            <div class="photo-box" style="height: 95px;">
               <img src="cover.jpeg" alt="Cover Photo" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <p class="caption">"You carry a warmth that turns ordinary days into gold."</p>
           </div>
         
-          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.55rem; color: var(--gold); position: relative; z-index: 2;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.5rem; color: var(--gold); position: relative; z-index: 2;">
             <span>★ SPECIAL EDITION</span>
             <span>tap halaman →</span>
           </div>
@@ -407,22 +400,22 @@
 
         <div class="back">
           <div class="inner-border"></div>
-          <div style="text-align: center; margin-top: 4px; position: relative; z-index: 2;">
+          <div style="text-align: center; margin-top: 2px; position: relative; z-index: 2;">
             <span class="page-badge">Prologue</span>
-            <h3 class="page-title-en" style="margin-top: 4px;">Words for the Soul</h3>
+            <h3 class="page-title-en">Words for the Soul</h3>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 2;">
-            <div class="photo-frame" style="transform: rotate(1.5deg); margin: 0; display: inline-block; width: 100%;">
+          <div style="display: flex; flex-direction: column; gap: 5px; position: relative; z-index: 2;">
+            <div class="photo-frame" style="transform: rotate(1.5deg); margin: 0; width: 100%;">
               <div class="photo-box" style="height: auto; background: #fff; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-                <img src="foto2.jpeg" alt="Foto Kenangan" style="width: auto; height: 100%; max-height: 155px; object-fit: contain; display: block; margin: 0 auto;">
+                <img src="foto2.jpeg" alt="Foto Kenangan" style="width: auto; height: 100%; max-height: 120px; object-fit: contain; display: block; margin: 0 auto;">
               </div>
             </div>
-            <div class="note-box" style="font-size: 0.62rem;">
+            <div class="note-box">
               "Every beautiful story begins with a single bright step—and yours is already a masterpiece in the making."
             </div>
             <div class="divider-ornament">✦ • ✦</div>
-            <p style="font-size: 0.58rem; text-align: center; color: var(--gold);">Page 01</p>
+            <p style="font-size: 0.5rem; text-align: center; color: var(--gold);">Page 01</p>
           </div>
         </div>
       </div>
@@ -432,27 +425,27 @@
         <div class="front">
           <div class="inner-border"></div>
           <div class="tape" style="background: rgba(255, 198, 211, 0.85);"></div>
-          <div style="text-align: center; margin-top: 2px; position: relative; z-index: 2;">
+          <div style="text-align: center; margin-top: 1px; position: relative; z-index: 2;">
             <span class="page-badge">Chapter 02</span>
-            <h3 class="page-title-en" style="margin-top: 2px;">Captured Moments</h3>
+            <h3 class="page-title-en">Captured Moments</h3>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; position: relative; z-index: 2;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; position: relative; z-index: 2;">
             <div class="photo-frame" style="transform: rotate(-2deg);">
-              <div class="photo-box" style="height: 78px;"> <img src="cantik4.jpg" alt="Photo" style="width: 100%; height: 100%; object-fit: cover;"></div>
-              <p class="caption" style="font-size: 0.58rem;">"Hbd y lucu🤨"</p>
+              <div class="photo-box" style="height: 68px;"> <img src="cantik4.jpg" alt="Photo" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <p class="caption" style="font-size: 0.5rem;">"Hbd y lucu🤨"</p>
             </div>
             <div class="photo-frame" style="transform: rotate(2deg);">
-              <div class="photo-box" style="height: 78px;"> <img src="cantik3.jpg" alt="Photo" style="width: 100%; height: 100%; object-fit: cover;"></div>
-              <p class="caption" style="font-size: 0.58rem;">"WUATB gemas🙄"</p>
+              <div class="photo-box" style="height: 68px;"> <img src="cantik3.jpg" alt="Photo" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <p class="caption" style="font-size: 0.5rem;">"WUATB gemas🙄"</p>
             </div>
           </div>
 
-          <div class="note-box" style="font-size: 0.62rem;">
+          <div class="note-box">
             "Collect moments, not things—because the best parts of life are the smiles we never want to forget."
           </div>
 
-          <div style="display: flex; justify-content: space-between; font-size: 0.55rem; color: var(--gold); position: relative; z-index: 2;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.5rem; color: var(--gold); position: relative; z-index: 2;">
             <span>♡ MEMORIES</span>
             <span>tap halaman</span>
           </div>
@@ -460,18 +453,18 @@
 
         <div class="back">
           <div class="inner-border"></div>
-          <div style="text-align: center; margin-top: 6px; position: relative; z-index: 2;">
+          <div style="text-align: center; margin-top: 2px; position: relative; z-index: 2;">
             <span class="page-badge">Gratitude</span>
-            <h3 class="page-title-en" style="margin-top: 4px;">Thank You</h3>
+            <h3 class="page-title-en">Thank You</h3>
           </div>
 
-          <div class="note-box" style="margin: auto 0; padding: 10px 10px; font-size: 0.65rem; text-align: center; border-left: 3px solid var(--gold);">
+          <div class="note-box" style="margin: auto 0; padding: 8px 8px; text-align: center; border-left: 2.5px solid var(--gold);">
             "Terima kasih sudah selalu kuat, selalu bertahan, dan selalu bahagia di tengah semua kesulitan yang ada"
-            <p class="handwriting" style="font-size: 0.9rem; margin-top: 4px; color: var(--purple-deep);">~ Forever grateful ~</p>
+            <p class="handwriting" style="font-size: 0.8rem; margin-top: 2px; color: var(--purple-deep);">~ Forever grateful ~</p>
           </div>
 
           <div class="divider-ornament">❀ • ❀</div>
-          <p style="font-size: 0.58rem; text-align: center; color: var(--gold);">Page 02</p>
+          <p style="font-size: 0.5rem; text-align: center; color: var(--gold);">Page 02</p>
         </div>
       </div>
 
@@ -480,23 +473,23 @@
         <div class="front">
           <div class="inner-border"></div>
           <div class="tape"></div>
-          <div style="text-align: center; margin-top: 2px; position: relative; z-index: 2;">
+          <div style="text-align: center; margin-top: 1px; position: relative; z-index: 2;">
             <span class="page-badge">Final Chapter</span>
-            <h3 class="page-title-en" style="margin-top: 2px;">Wishes & Prayers</h3>
+            <h3 class="page-title-en">Wishes & Prayers</h3>
           </div>
 
-          <div class="photo-frame" style="transform: rotate(1deg); margin: 2px 4px;">
-            <div class="photo-box" style="height: 95px;">
+          <div class="photo-frame" style="transform: rotate(1deg); margin: 2px 2px;">
+            <div class="photo-box" style="height: 72px;">
               <img src="cantik2.jpg" alt="Closing Photo" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-            <p class="caption" style="font-size: 0.62rem;">"To a brand new chapter ✨"</p>
+            <p class="caption">"To a brand new chapter ✨"</p>
           </div>
 
-          <div style="position: relative; z-index: 2; background: #fdf6e7; border: 1.5px solid #e2cbb0; padding: 8px 10px; border-radius: 8px; text-align: center;">
-            <p style="font-size: 0.64rem; color: var(--purple-deep); font-style: italic; line-height: 1.35;">
+          <div style="position: relative; z-index: 2; background: #fdf6e7; border: 1px solid #e2cbb0; padding: 6px 8px; border-radius: 6px; text-align: center;">
+            <p style="font-size: 0.54rem; color: var(--purple-deep); font-style: italic; line-height: 1.25;">
               "Selamat menapaki babak baru dalam hidupmu, semoga nirmala senantiasa menyertai setiap langkahmu."
             </p>
-            <span style="font-size: 0.58rem; color: var(--gold); font-weight: 600; margin-top: 2px; display: block;">
+            <span style="font-size: 0.48rem; color: var(--gold); font-weight: 600; margin-top: 1px; display: block;">
               Happy Birthday, Azkiya 💖
             </span>
           </div>
