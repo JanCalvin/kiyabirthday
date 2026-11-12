@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#172b4d">
+<title>Collect Your Birthday Wishes</title>
+<style>
+  :root { --ink:#172b4d; --cream:#fff8e8; --pink:#ff8eaa; --yellow:#ffd166; --blue:#8bd3f7; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; width:100%; min-height:100%; background:#172b4d; color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,sans-serif; }
+  body { display:flex; justify-content:center; align-items:center; min-height:100dvh; overflow:hidden; }
+  #app { width:min(100vw,1100px); height:min(100dvh,720px); min-height:320px; position:relative; background:#9be3e8; overflow:hidden; border:4px solid #fff8e8; border-radius:18px; box-shadow:0 18px 60px #07152c88; }
+  canvas { width:100%; height:100%; display:block; image-rendering:pixelated; touch-action:none; }
+  .hud { position:absolute; inset:12px 14px auto; display:flex; justify-content:space-between; align-items:flex-start; pointer-events:none; gap:8px; z-index:3; }
+  .hud-right { display:flex; gap:6px; align-items:center; pointer-events:auto; }
+  .pill { background:#fff8e8ed; border:3px solid var(--ink); border-radius:12px; padding:6px 11px; font-weight:900; font-size:clamp(12px,2vw,17px); box-shadow:3px 3px 0 var(--ink); }
+  #muteBtn { cursor:pointer; padding:6px 10px; line-height:1; }
+  #levelName { max-width:44%; text-align:center; }
+  .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:18px; background:#172b4dcc; z-index:5; }
+  .panel { width:min(520px,100%); max-height:95%; overflow:auto; background:var(--cream); border:4px solid var(--ink); border-radius:22px; padding:clamp(18px,4vw,30px); text-align:center; box-shadow:8px 8px 0 #172b4d; }
+  h1 { margin:0 0 8px; line-height:1.05; font-size:clamp(27px,6vw,46px); color:#f05d82; text-shadow:2px 2px 0 var(--ink); }
+  h2 { margin:0 0 8px; font-size:clamp(21px,4vw,30px); }
+  p { line-height:1.5; margin:8px 0 15px; }
+  .mascot { font-size:clamp(52px,10vw,82px); margin:5px 0; filter:drop-shadow(3px 4px 0 #172b4d); }
+  button { border:3px solid var(--ink); border-radius:13px; background:var(--yellow); color:var(--ink); padding:11px 18px; font-size:16px; font-weight:900; cursor:pointer; box-shadow:4px 4px 0 var(--ink); touch-action:manipulation; }
+  button:active { transform:translate(3px,3px); box-shadow:1px 1px 0 var(--ink); }
+  .wish-card { background:#fff; border:3px dashed #f05d82; border-radius:15px; padding:13px; margin:12px 0; }
+  #toast { position:absolute; z-index:4; left:50%; top:22%; transform:translate(-50%,-10px); background:#fff8e8; border:3px solid var(--ink); border-radius:12px; padding:10px 14px; font-weight:900; text-align:center; opacity:0; transition:.2s; pointer-events:none; width:max-content; max-width:85%; }
+  #toast.show { opacity:1; transform:translate(-50%,0); }
+  .touch { position:absolute; inset:auto 0 14px; display:flex; justify-content:space-between; padding:0 16px; z-index:4; pointer-events:none; }
+  .cluster { display:flex; gap:10px; pointer-events:auto; }
+  .touch button { width:clamp(48px,12vw,66px); height:clamp(48px,12vw,66px); padding:0; border-radius:18px; background:#fff8e8dd; font-size:24px; box-shadow:3px 3px 0 var(--ink); user-select:none; -webkit-user-select:none; }
+  .touch .jump { width:clamp(62px,15vw,78px); height:clamp(62px,15vw,78px); border-radius:50%; background:#ffd166ee; }
+  .hint { font-size:12px; color:#53627a; }
+  #rotate { display:none; }
+  @media (orientation:portrait) and (max-width:800px) {
+    #rotate { display:block; position:absolute; z-index:6; top:8px; left:50%; transform:translateX(-50%); background:#172b4dcc; color:white; border-radius:20px; padding:5px 10px; font-size:11px; font-weight:800; pointer-events:none; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="game" width="960" height="540" aria-label="Game Collect Your Birthday Wishes"></canvas>
+  <div class="hud">
+    <div class="pill" id="wishCount">💌 0 / 5</div>
+    <div class="pill" id="levelName">THE HAPPY MEADOW</div>
+    <div class="hud-right">
+      <div class="pill" id="lifeCount">❤️❤️❤️</div>
+      <button class="pill" id="muteBtn" aria-label="Suara">🔊</button>
+    </div>
+  </div>
+  <div id="toast"></div>
+  <div id="rotate">↻ Putar HP ke landscape bang</div>
+  <div class="touch">
+    <div class="cluster">
+      <button data-key="left" aria-label="Kiri">◀</button>
+      <button data-key="right" aria-label="Kanan">▶</button>
+    </div>
+    <div class="cluster">
+      <button class="jump" data-key="jump" aria-label="Lompat">⬆</button>
+    </div>
+  </div>
+  <div class="overlay" id="startScreen">
+    <div class="panel">
+      <div class="mascot">🐻🎁</div>
+      <h1>Collect Your<br>Birthday Wishes!</h1>
+      <p>Ada yg kehilangan 5 pesan ulang tahun nich. Bantu si beruang imoed ngumpulin hadiah rahasia ygy!</p>
+      <p class="hint">PC: ← → / A D untuk bergerak, SPACE untuk lompat.<br>HP: gunakan tombol di layar.</p>
+      <button id="startBtn">LET'S PLAY! ✨</button>
+    </div>
+  </div>
+  <div class="overlay" id="messageScreen" style="display:none">
+    <div class="panel">
+      <div class="mascot" id="messageIcon">💌</div>
+      <h2 id="messageTitle">Birthday Wish!</h2>
+      <div class="wish-card" id="messageText"></div>
+      <button id="continueBtn">LANJUTKAN</button>
+    </div>
+  </div>
+  <div class="overlay" id="endScreen" style="display:none">
+    <div class="panel">
+      <div class="mascot">🎉🎂🎁</div>
+      <h1>YOU DID IT!</h1>
+      <p>Kamu berhasil mengumpulkan semua birthday wishes. Tapi… hadiah sebenarnya masih menunggu.</p>
+      <a href="birthdaypage.html" style="text-decoration:none;">
+        <button id="revealBtn">BUKA HADIAH TERAKHIR 💝</button>
+      </a>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  const canvas = document.getElementById('game'), ctx = canvas.getContext('2d');
+  const W=960,H=540, floor=450, gravity=0.62;
+  const $ = id => document.getElementById(id);
+  const screens=['startScreen','messageScreen','endScreen'];
+
+  let audioCtx = null, muted = false;
+  function initAudio() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  function playTone(freq, type, duration, delay=0, vol=0.12, slideTo=null) {
+    if (muted) return;
+    initAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime + delay;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, now);
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+    gain.gain.setValueAtTime(vol, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + duration);
+  }
+  const sfx = {
+    jump() { playTone(260, 'square', 0.16, 0, 0.08, 540); },
+    collect() {
+      playTone(523.25, 'triangle', 0.12, 0, 0.15);
+      playTone(659.25, 'triangle', 0.12, 0.09, 0.15);
+      playTone(783.99, 'triangle', 0.12, 0.18, 0.15);
+      playTone(1046.5, 'triangle', 0.28, 0.27, 0.16);
+    },
+    hurt() {
+      playTone(220, 'sawtooth', 0.14, 0, 0.12, 130);
+      playTone(150, 'sawtooth', 0.22, 0.12, 0.12, 75);
+    },
+    door() {
+      playTone(392, 'sine', 0.12, 0, 0.14);
+      playTone(523.25, 'sine', 0.12, 0.1, 0.14);
+      playTone(659.25, 'sine', 0.25, 0.2, 0.14);
+    },
+    locked() {
+      playTone(180, 'square', 0.1, 0, 0.08);
+      playTone(140, 'square', 0.14, 0.1, 0.08);
+    },
+    win() {
+      const notes = [523.25, 523.25, 587.33, 523.25, 698.46, 659.25];
+      const times = [0, 0.18, 0.36, 0.62, 0.88, 1.15];
+      notes.forEach((n, idx) => playTone(n, 'triangle', idx===5?0.45:0.2, times[idx], 0.16));
+    }
+  };
+  $('muteBtn').onclick = () => {
+    muted = !muted;
+    $('muteBtn').textContent = muted ? '🔇' : '🔊';
+  };
+
+  const wishes=[
+    {icon:'💗',title:'A Little Reminder',text:'Jangan lupa bahagia!'},
+    {icon:'⭐',title:'Good Luck!',text:'Semoga semua hal(skripsi) yang kamu usahakan berjalan lancar car car!'},
+    {icon:'🍰',title:'Sweet Moments',text:'Semoga tahun ini jadi tahun penuh kenangan indah buatmu!'},
+    {icon:'🎁',title:'Dreams Come True',text:'Jangan Lupa Mam! (mff bingung mo blg apalagi)'},
+    {icon:'💌',title:'A Secret Message',text:'Ada satu hadiah lagi yang menunggumu di ujung perjalanan...'}
+  ];
+  const levels=[
+    {name:'THE HAPPY MEADOW', theme:'meadow', length:1900, platforms:[[260,375,130],[480,320,125],[720,385,140],[980,335,140],[1240,380,130],[1510,320,140]], hazards:[[610,432,45,18],[1090,432,55,18],[1400,432,50,18]], items:[[350,335,0],[560,280,1]]},
+    {name:'THE TRICKY FOREST', theme:'forest', length:2100, platforms:[[210,365,120],[430,300,110],[660,355,120],[900,285,120],[1150,350,120],[1400,290,120],[1660,350,130]], hazards:[[330,432,60,18],[570,432,55,18],[810,432,60,18],[1050,432,55,18],[1320,432,60,18],[1570,432,55,18]], items:[[490,260,2],[960,245,3]]},
+    {name:'THE BIRTHDAY CASTLE', theme:'castle', length:1900, platforms:[[250,365,130],[500,300,120],[760,350,120],[1020,280,130],[1300,350,130],[1550,300,130]], hazards:[[390,432,55,18],[650,432,65,18],[920,432,55,18],[1190,432,65,18],[1460,432,55,18]], items:[[1080,240,4]]}
+  ];
+
+  const stars = Array.from({length:45}, (_,i)=>({x:(i*197)%960, y:(i*83)%280, r:(i%2)+1.2}));
+
+  let levelIndex=0, collected=0, lives=3, camera=0, running=false, paused=false, last=0, toastTimer=0, doorWarnTimer=0;
+  let keys={left:false,right:false,jump:false}, player, levelData;
+  const resize=()=>{ const dpr=Math.min(window.devicePixelRatio||1,2); canvas.width=W*dpr; canvas.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); };
+  window.addEventListener('resize',resize); resize();
+
+  function newPlayer(){ return {x:38,y:floor-46,w:34,h:46,vx:0,vy:0,onGround:true,face:1,inv:0}; }
+
+  function loadLevel(i){
+    levelIndex=i;
+    levelData=levels[i];
+    player=newPlayer();
+    camera=0;
+    updateHud();
+  }
+  function updateHud(){ $('wishCount').textContent=`💌 ${collected} / 5`; $('levelName').textContent=levels[levelIndex].name; $('lifeCount').textContent='❤️'.repeat(lives)+'🖤'.repeat(3-lives); }
+  function showToast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),1600); }
+  function hideScreens(){ screens.forEach(id=>$(id).style.display='none'); }
+
+  function start(){
+    initAudio();
+    hideScreens();
+    levels.forEach(lvl => lvl.items.forEach(it => { it.got = false; }));
+    collected=0; lives=3;
+    loadLevel(0);
+    sfx.door();
+    running=true; paused=false; last=performance.now();
+    requestAnimationFrame(loop);
+  }
+
+  function openWish(index){
+    paused=true;
+    sfx.collect();
+    $('messageIcon').textContent=wishes[index].icon;
+    $('messageTitle').textContent=wishes[index].title;
+    $('messageText').textContent=wishes[index].text;
+    $('messageScreen').style.display='flex';
+  }
+
+  function nextLevel(){
+    if(levelIndex<2){
+      sfx.door();
+      loadLevel(levelIndex+1);
+      showToast(`Masuk ke ${levels[levelIndex].name}! ✨`);
+    } else {
+      sfx.win();
+      running=false;
+      $('endScreen').style.display='flex';
+    }
+  }
+
+  function respawn(){
+    sfx.hurt();
+    lives--; updateHud();
+    if(lives<=0){ lives=3; updateHud(); showToast('Coba lagi! Kamu pasti bisa 💪'); }
+    player=newPlayer();
+    camera=0;
+    player.inv=100;
+  }
+
+  function overlap(a,b){ return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y; }
+
+  function update(){
+    if(!running||paused)return;
+    const speed=4.3;
+    player.vx=0;
+    if(keys.left){player.vx=-speed;player.face=-1;}
+    if(keys.right){player.vx=speed;player.face=1;}
+    if(keys.jump && player.onGround){
+      player.vy=-13.2;
+      player.onGround=false;
+      sfx.jump();
+    }
+    player.vy=Math.min(player.vy+gravity,14);
+    const oldY=player.y;
+    player.x=Math.max(10,Math.min(levelData.length-player.w,player.x+player.vx));
+    player.y+=player.vy; player.onGround=false;
+    if(player.y+player.h>=floor){player.y=floor-player.h;player.vy=0;player.onGround=true;}
+    for(const p of levelData.platforms){
+      const box={x:p[0],y:p[1],w:p[2],h:18};
+      if(player.vy>=0 && oldY+player.h<=box.y+8 && player.y+player.h>=box.y && player.x+player.w>box.x && player.x<box.x+box.w){
+        player.y=box.y-player.h;player.vy=0;player.onGround=true;
+      }
+    }
+    if(player.y>H+80){respawn();}
+    for(const h of levelData.hazards){
+      if(overlap(player,{x:h[0],y:h[1]-12,w:h[2],h:h[3]+12}) && player.inv<=0){respawn();break;}
+    }
+    if(player.inv>0)player.inv--;
+    if(doorWarnTimer>0)doorWarnTimer--;
+    for(const item of levelData.items){
+      if(!item.got && overlap(player,{x:item[0]-13,y:item[1]-13,w:26,h:26})){
+        item.got=true; const idx=item[2]; collected++; updateHud(); openWish(idx); break;
+      }
+    }
+    if(player.x+player.w > levelData.length-92){
+      const req = levelIndex===0 ? 2 : levelIndex===1 ? 4 : 5;
+      if(collected >= req) {
+        nextLevel();
+      } else {
+        if(doorWarnTimer<=0){
+          sfx.locked();
+          showToast('Cari semua birthday wishes di level ini dulu! 💌');
+          doorWarnTimer=60;
+        }
+        player.x = levelData.length-92-player.w;
+      }
+    }
+    camera=Math.max(0,Math.min(levelData.length-W,player.x-W*0.36));
+  }
+
+  function cloud(x,y,s,color='#ffffffaa'){
+    ctx.fillStyle=color;
+    ctx.beginPath();
+    ctx.arc(x,y,22*s,0,Math.PI*2);
+    ctx.arc(x+25*s,y-9*s,28*s,0,Math.PI*2);
+    ctx.arc(x+55*s,y,20*s,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  function drawDoor(x, isExit=true, unlocked=true) {
+    ctx.fillStyle = isExit ? '#7354a5' : '#4a6b82';
+    ctx.fillRect(x, floor-92, 64, 92);
+    ctx.fillStyle = isExit ? (unlocked ? '#f9d66b' : '#b89f6d') : '#89b0c7';
+    ctx.fillRect(x+12, floor-80, 40, 80);
+    ctx.fillStyle = '#172b4d';
+    ctx.beginPath();
+    ctx.arc(isExit ? x+42 : x+22, floor-43, 4, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#172b4d';
+    ctx.fillRect(x+8, floor-110, 48, 15);
+    ctx.fillStyle = '#fff8e8';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(isExit ? (unlocked ? 'NEXT ➔' : 'LOCKED') : 'START', x+32, floor-99);
+  }
+
+  function drawBackground(theme) {
+    const grad = ctx.createLinearGradient(0,0,0,H);
+    if (theme === 'meadow') {
+      grad.addColorStop(0,'#8bd8f2'); grad.addColorStop(1,'#d8f5d7');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#ffe66d'; ctx.beginPath(); ctx.arc(820,85,38,0,Math.PI*2); ctx.fill();
+      cloud(100-(camera*.18%1100),100,1);
+      cloud(520-(camera*.18%1100),145,.8);
+      cloud(900-(camera*.18%1100),85,1.1);
+      ctx.fillStyle='#8ecf9a';
+      for(let x=-200-(camera*.3%300);x<W+300;x+=300){ctx.beginPath();ctx.arc(x,470,180,Math.PI,0);ctx.fill();}
+      ctx.fillStyle='#55a96c'; ctx.fillRect(0,floor,W,H-floor);
+      ctx.fillStyle='#317c55'; ctx.fillRect(0,floor+16,W,H-floor);
+      for(let x=0;x<W;x+=42){ctx.fillStyle='#80ca72';ctx.fillRect(x,floor+3,22,5);}
+    } else if (theme === 'forest') {
+      grad.addColorStop(0,'#ff9a76'); grad.addColorStop(0.55,'#ffeadb'); grad.addColorStop(1,'#679b9b');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#ffd16688'; ctx.beginPath(); ctx.arc(480,290,75,0,Math.PI*2); ctx.fill();
+      cloud(160-(camera*.15%1100),95,0.9,'#ffd3b6aa');
+      cloud(640-(camera*.15%1100),130,1.1,'#ffd3b6aa');
+      ctx.fillStyle='#5b7d7d';
+      for(let x=-150-(camera*.22%340);x<W+340;x+=340){
+        ctx.beginPath(); ctx.moveTo(x,floor); ctx.lineTo(x+170,260); ctx.lineTo(x+340,floor); ctx.fill();
+      }
+      ctx.fillStyle='#3b5e5e';
+      for(let x=-60-(camera*.38%180);x<W+180;x+=180){
+        ctx.fillRect(x+22,340,14,110);
+        ctx.beginPath(); ctx.moveTo(x,360); ctx.lineTo(x+29,280); ctx.lineTo(x+58,360); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(x+5,320); ctx.lineTo(x+29,245); ctx.lineTo(x+53,320); ctx.fill();
+      }
+      ctx.fillStyle='#3e7c59'; ctx.fillRect(0,floor,W,H-floor);
+      ctx.fillStyle='#29523b'; ctx.fillRect(0,floor+16,W,H-floor);
+      for(let x=0;x<W;x+=36){ctx.fillStyle='#5ba877';ctx.fillRect(x,floor+3,18,5);}
+    } else {
+      grad.addColorStop(0,'#1b264f'); grad.addColorStop(0.6,'#3a4f7a'); grad.addColorStop(1,'#6b5b95');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#fff8e8';
+      stars.forEach(s => { ctx.beginPath(); ctx.arc((s.x - camera*0.05 + 960)%960, s.y, s.r, 0, Math.PI*2); ctx.fill(); });
+      ctx.fillStyle='#fff3b0'; ctx.beginPath(); ctx.arc(780,95,36,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#2b355c';
+      for(let x=-100-(camera*.28%420);x<W+420;x+=420){
+        ctx.fillRect(x+40,260,90,190);
+        ctx.fillRect(x+30,245,20,20); ctx.fillRect(x+75,245,20,20); ctx.fillRect(x+120,245,20,20);
+        ctx.fillStyle='#ffd16666'; ctx.fillRect(x+75,295,20,30);
+        ctx.fillStyle='#2b355c';
+      }
+      ctx.fillStyle='#5c5470'; ctx.fillRect(0,floor,W,H-floor);
+      ctx.fillStyle='#352f44'; ctx.fillRect(0,floor+16,W,H-floor);
+      for(let x=0;x<W;x+=48){ctx.fillStyle='#7c7394';ctx.fillRect(x,floor+3,38,8);}
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    drawBackground(levelData.theme);
+
+    ctx.save(); ctx.translate(-camera,0);
+
+    drawDoor(22, false, true);
+
+    for(const p of levelData.platforms){
+      if(levelData.theme==='castle'){
+        ctx.fillStyle='#5c5470'; ctx.fillRect(p[0],p[1],p[2],18);
+        ctx.fillStyle='#8c82a6'; ctx.fillRect(p[0],p[1],p[2],6);
+      } else {
+        ctx.fillStyle='#8b5e48'; ctx.fillRect(p[0],p[1],p[2],18);
+        ctx.fillStyle = levelData.theme==='forest' ? '#499167' : '#62bd72';
+        ctx.fillRect(p[0],p[1],p[2],7);
+      }
+      ctx.fillStyle='#172b4d33'; ctx.fillRect(p[0]+8,p[1]+18,p[2]-16,5);
+    }
+
+    for(const h of levelData.hazards){
+      ctx.fillStyle='#f26b75';
+      for(let x=h[0];x<h[0]+h[2];x+=18){
+        ctx.beginPath();ctx.moveTo(x,h[1]+h[3]);ctx.lineTo(x+9,h[1]-7);ctx.lineTo(x+18,h[1]+h[3]);ctx.fill();
+      }
+    }
+
+    levelData.items.forEach(it=>{
+      if(!it.got){
+        ctx.font='30px sans-serif'; ctx.textAlign='center';
+        ctx.fillText(['💗','⭐','🍰','🎁','💌'][it[2]],it[0],it[1]+10);
+      }
+    });
+
+    const req = levelIndex===0 ? 2 : levelIndex===1 ? 4 : 5;
+    drawDoor(levelData.length-96, true, collected >= req);
+
+    if(!(player.inv>0 && Math.floor(player.inv/6)%2===0)){
+      ctx.fillStyle='#8a573d';ctx.fillRect(player.x+5,player.y+12,25,30);ctx.fillRect(player.x+2,player.y+2,30,25);
+      ctx.fillStyle='#8a573d';ctx.fillRect(player.x,player.y,11,12);ctx.fillRect(player.x+24,player.y,11,12);
+      ctx.fillStyle='#f3c6a2';ctx.fillRect(player.x+9,player.y+15,17,12);
+      ctx.fillStyle='#172b4d';ctx.fillRect(player.x+(player.face===1?22:8),player.y+10,4,5);ctx.fillRect(player.x+15,player.y+22,5,4);
+      ctx.fillStyle='#59402f';ctx.fillRect(player.x+5,player.y+39,10,7);ctx.fillRect(player.x+21,player.y+39,10,7);
+      ctx.fillStyle='#ff8eaa';ctx.fillRect(player.x+12,player.y-5,12,7);
+    }
+    ctx.restore();
+
+    ctx.fillStyle='#172b4d55';ctx.fillRect(20,H-16,W-40,5);
+    ctx.fillStyle='#ffd166';ctx.fillRect(20,H-16,(W-40)*(player.x/levelData.length),5);
+  }
+
+  function loop(t){ if(!running)return; const dt=Math.min((t-last)/16.67,2);last=t; for(let i=0;i<dt;i++)update();draw();requestAnimationFrame(loop); }
+  document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp',' ','a','d','w','A','D','W'].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=true;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=true;if(e.key===' '||e.key==='ArrowUp'||e.key.toLowerCase()==='w')keys.jump=true;});
+  document.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=false;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=false;if(e.key===' '||e.key==='ArrowUp'||e.key.toLowerCase()==='w')keys.jump=false;});
+  document.querySelectorAll('[data-key]').forEach(btn=>{
+    const k=btn.dataset.key;
+    const down=e=>{e.preventDefault();initAudio();keys[k]=true;try{btn.setPointerCapture(e.pointerId);}catch(_){}};
+    const up=e=>{e.preventDefault();keys[k]=false;};
+    btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('lostpointercapture',up);
+    btn.addEventListener('contextmenu',e=>e.preventDefault());
+  });
+  $('startBtn').onclick=start;
+  $('continueBtn').onclick=()=>{ $('messageScreen').style.display='none'; paused=false; if(!running){running=true;last=performance.now();requestAnimationFrame(loop);} };
+
+  loadLevel(0); draw();
+})();
+</script>
+</body>
+</html>

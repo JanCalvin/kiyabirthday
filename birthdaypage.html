@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Happy Birthday, My Love - Radio & Scrapbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-dark-radial: radial-gradient(circle at center, #231535 0%, #100818 100%);
+    --purple-deep: #4a3459;
+    --purple-mid: #8a6ea8;
+    --gold: #a07855;
+    --gold-soft: #f3d584;
+    --paper: #fcf9f2;
+    --paper-border: #e2d5c3;
+    --pink: #ff8eaa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background: var(--bg-dark-radial);
+    font-family:'Poppins',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow-x:hidden;
+    position:relative;
+    padding:20px;
+    color: #f3ece0;
+  }
+
+  /* --- BACKGROUND ORNAMENT --- */
+  .bg-blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(90px);
+    z-index:0;
+    opacity:.35;
+    animation: blobFloat 12s ease-in-out infinite alternate;
+  }
+  .blob-1{width:420px;height:420px;background:#4a2858;bottom:-80px;left:-90px;}
+  .blob-2{width:480px;height:480px;background:#683b58;top:-100px;right:-100px;animation-delay: -6s;}
+  @keyframes blobFloat {
+    0%{ transform: translate(0, 0) scale(1); }
+    100%{ transform: translate(30px, -40px) scale(1.1); }
+  }
+
+  .stars {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 40px 70px, #ffd166, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 160px 120px, #ff8eaa, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 250px 250px;
+    opacity: 0.3;
+  }
+
+  #fireworksCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* --- SCREEN MANAGEMENT (SUPER SMOOTH TRANSITION) --- */
+  .screen-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 640px;
+    min-height: 520px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .screen {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .screen.hidden {
+    opacity: 0;
+    transform: scale(0.92) translateY(15px);
+    pointer-events: none;
+    position: absolute;
+  }
+
+  /* --- RADIO STYLES --- */
+  .radio-scene{ display:flex; flex-direction:column; align-items:center; width:100%; max-width:420px; }
+  .radio-eyebrow{ font-size:.78rem; letter-spacing:.25em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:14px; opacity:.95; text-shadow: 0 2px 10px rgba(212,175,55,0.3); }
+
+  .radio-body{
+    position:relative; width:330px;
+    background:linear-gradient(160deg,#422955,#271633);
+    border-radius:28px; padding:28px 24px 22px;
+    box-shadow:0 25px 50px rgba(10,5,15,0.6), inset 0 1px 0 rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .radio-body::before{
+    content:""; position:absolute; inset:8px;
+    border:1px solid rgba(255,255,255,.05); border-radius:22px; pointer-events:none;
+  }
+  .radio-antenna{
+    position:absolute; top:-50px; right:42px; width:2px; height:54px;
+    background:var(--gold-soft); transform:rotate(18deg); transform-origin:bottom;
+  }
+  .radio-antenna::after{
+    content:""; position:absolute; top:-4px; left:50%; transform:translateX(-50%);
+    width:8px; height:8px; border-radius:50%; background:var(--gold-soft); box-shadow: 0 0 8px var(--gold-soft);
+  }
+  .radio-grille{
+    height:78px; border-radius:14px;
+    background: repeating-linear-gradient(90deg, rgba(0,0,0,.45) 0 2px, transparent 2px 8px), linear-gradient(160deg,#22132e,#170b20);
+    box-shadow:inset 0 4px 10px rgba(0,0,0,0.6); margin-bottom:18px; position:relative; overflow:hidden; border: 1px solid rgba(255,255,255,0.03);
+  }
+  .eq-bars{ position:absolute; inset:0; display:flex; align-items:flex-end; justify-content:center; gap:5px; padding-bottom:14px; }
+  .eq-bars span{
+    width:4px; height:8px; border-radius:2px; background:var(--gold-soft); opacity:.85;
+    animation:eqBounce 1.1s ease-in-out infinite; animation-play-state:paused; box-shadow: 0 0 6px rgba(243,213,132,0.4);
+  }
+  .eq-bars span:nth-child(1){ animation-delay:.0s; }
+  .eq-bars span:nth-child(2){ animation-delay:.15s; }
+  .eq-bars span:nth-child(3){ animation-delay:.3s; }
+  .eq-bars span:nth-child(4){ animation-delay:.45s; }
+  .eq-bars span:nth-child(5){ animation-delay:.2s; }
+  .eq-bars span:nth-child(6){ animation-delay:.05s; }
+  .eq-bars span:nth-child(7){ animation-delay:.35s; }
+  .radio-body.playing .eq-bars span{ animation-play-state:running; }
+  @keyframes eqBounce{ 0%,100%{ height:8px; } 50%{ height:36px; } }
+
+  .track-info{ text-align:center; color:#f3ece0; margin-bottom:14px; }
+  .track-title{ font-family:'Playfair Display',serif; font-style:italic; font-size:1.2rem; margin-bottom:2px; color: #fff; }
+  .track-sub{ font-size:.75rem; letter-spacing:.05em; color:#d0b5e8; }
+
+  .radio-seek{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .radio-seek span{ font-size:.68rem; color:#d0b5e8; width:32px; text-align:center; font-variant-numeric:tabular-nums; }
+  .radio-seek input[type="range"]{
+    flex:1; -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; background:rgba(255,255,255,.18); outline:none;
+  }
+  .radio-seek input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:13px; height:13px; border-radius:50%; background:var(--gold-soft); box-shadow: 0 0 8px var(--gold-soft); cursor:pointer; margin-top:-4.5px;
+  }
+
+  .radio-controls{ display:flex; align-items:center; justify-content:center; gap:22px; margin-bottom:18px; }
+  .radio-controls button{ background:none; border:none; cursor:pointer; color:#f3ece0; display:flex; align-items:center; justify-content:center; transition:transform .15s ease, opacity .15s ease; }
+  .radio-controls button:hover{ transform:scale(1.08); opacity:.85; }
+  .btn-skip svg{ width:18px;height:18px; }
+  .btn-play{
+    width:56px; height:56px; border-radius:50%; background:linear-gradient(160deg,#f3d584,var(--gold)); color:#1c0f28;
+    box-shadow:0 8px 20px rgba(212,175,55,0.4), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .btn-play svg{ width:22px;height:22px; }
+
+  .radio-volume{ display:flex; align-items:center; gap:8px; }
+  .radio-volume svg{ width:16px;height:16px; color:#d0b5e8; flex-shrink:0; }
+  .radio-volume input[type="range"]{
+    flex:1; -webkit-appearance:none; appearance:none; height:3px; border-radius:2px; background:rgba(255,255,255,.18); outline:none;
+  }
+  .radio-volume input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:10px; height:10px; border-radius:50%; background:#d0b5e8; cursor:pointer; margin-top:-3.5px;
+  }
+  .radio-note{ margin-top:16px; font-size:.76rem; color:#d0b5e8; text-align:center; max-width:300px; line-height:1.4; opacity: 0.8; }
+
+  .next-page-container {
+    margin-top: 14px; opacity: 0; transform: translateY(12px) scale(0.95);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none;
+  }
+  .next-page-container.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .btn-spinning-next {
+    position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 11px 22px;
+    background: linear-gradient(135deg, #ffd166, #ff8eaa); color: #1a0b26; font-family: 'Poppins', sans-serif;
+    font-weight: 600; font-size: 0.83rem; letter-spacing: 0.05em; border: none; border-radius: 30px; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255, 142, 170, 0.35); text-decoration: none; overflow: hidden; animation: floatBtn 3s ease-in-out infinite;
+  }
+  @keyframes floatBtn { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+
+  /* --- SCRAPBOOK 3D STYLES (UPGRADED & RICHER) --- */
+  .header { text-align: center; margin-bottom: 12px; }
+  .eyebrow { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-soft); }
+  .title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.7rem; color: #fff; }
+
+  .book-container {
+    width: 320px; height: 430px; position: relative; perspective: 1500px;
+  }
+  .page {
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+    transform-origin: left center; transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1); cursor: pointer;
+  }
+  .front, .back {
+    position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+    background-color: var(--paper);
+    background-image: radial-gradient(rgba(160, 120, 85, 0.14) 1px, transparent 1px);
+    background-size: 14px 14px;
+    border: 2px solid var(--paper-border); border-radius: 12px; padding: 16px;
+    backface-visibility: hidden; box-shadow: inset 3px 0 10px rgba(0,0,0,0.05), 0 10px 20px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; justify-content: space-between; color: #4a3459;
+    overflow: hidden;
+  }
+  .back { transform: rotateY(180deg); background-color: #f6efe4; }
+  .page.flipped { transform: rotateY(-180deg); }
+
+  #page1 { z-index: 3; } #page2 { z-index: 2; } #page3 { z-index: 1; }
+  #page1.flipped { z-index: 1; } #page2.flipped { z-index: 2; } #page3.flipped { z-index: 3; }
+
+  /* Decorative Scrapbook Elements */
+  .inner-border {
+    position: absolute; inset: 7px;
+    border: 1px dashed rgba(160, 120, 85, 0.35);
+    border-radius: 8px; pointer-events: none; z-index: 1;
+  }
+  .tape {
+    position: absolute; top: -8px; left: 50%; transform: translateX(-50%) rotate(-2deg);
+    width: 78px; height: 18px; background: rgba(226, 213, 195, 0.9);
+    border-left: 1px dashed rgba(160, 120, 85, 0.45);
+    border-right: 1px dashed rgba(160, 120, 85, 0.45);
+    z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .washi-pink {
+    position: absolute; width: 46px; height: 13px;
+    background: rgba(255, 142, 170, 0.45);
+    border-left: 1px dashed rgba(214, 90, 122, 0.4);
+    border-right: 1px dashed rgba(214, 90, 122, 0.4);
+    z-index: 6; pointer-events: none;
+  }
+  .washi-gold {
+    position: absolute; width: 46px; height: 13px;
+    background: rgba(243, 213, 132, 0.65);
+    border-left: 1px dashed rgba(160, 120, 85, 0.4);
+    border-right: 1px dashed rgba(160, 120, 85, 0.4);
+    z-index: 6; pointer-events: none;
+  }
+  .sticker {
+    position: absolute; pointer-events: none; z-index: 6;
+    user-select: none; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.08));
+  }
+  .handwriting {
+    font-family: 'Caveat', cursive;
+    color: var(--gold);
+  }
+  .page-badge {
+    display: inline-block;
+    background: #f3e6d3;
+    border: 1px solid #dcc5a6;
+    color: var(--purple-deep);
+    font-size: 0.58rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .page-title-en {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--purple-deep);
+    letter-spacing: 0.3px;
+  }
+  .divider-ornament {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 4px;
+    opacity: 0.8;
+  }
+
+  .photo-frame {
+    position: relative;
+    background: #fff; padding: 6px 6px 8px 6px; border: 1px solid #e2d5c3;
+    box-shadow: 0 4px 10px rgba(74, 52, 89, 0.08); border-radius: 4px; text-align: center;
+    z-index: 2;
+  }
+  .photo-box {
+    width: 100%; height: 140px; background: #f2ebe0; border: 1px dashed var(--gold);
+    display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.78rem; overflow: hidden;
+  }
+  .caption { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.75rem; color: var(--purple-deep); margin-top: 5px; }
+  .note-box {
+    position: relative; z-index: 2;
+    background: #fdf6e7; border-left: 3px solid var(--gold); border-right: 1px dashed rgba(160,120,85,0.3);
+    border-top: 1px dashed rgba(160,120,85,0.3); border-bottom: 1px dashed rgba(160,120,85,0.3);
+    padding: 8px 10px; font-size: 0.71rem; color: var(--purple-deep); line-height: 1.38;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .controls { margin-top: 15px; display: flex; gap: 15px; align-items: center; }
+  .btn {
+    background: #5c4270; color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 7px 18px;
+    border-radius: 20px; font-family: 'Poppins', sans-serif; font-size: 0.78rem; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+  .back-link { margin-top: 10px; color: #d0b5e8; font-size: 0.76rem; text-decoration: underline; cursor: pointer; }
+
+  @media (max-width:380px){
+    .radio-body{ width:280px; padding:22px 18px 16px; }
+    .book-container{ width: 275px; height: 395px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+<div class="stars"></div>
+<canvas id="fireworksCanvas"></canvas>
+
+<div class="screen-container">
+  <!-- SCREEN 1: RADIO -->
+  <div class="screen" id="radioScreen">
+    <div class="radio-scene">
+      <p class="radio-eyebrow">Special Melody For You</p>
+
+      <div class="radio-body" id="radioBody">
+        <div class="radio-antenna"></div>
+        <div class="radio-top-row">
+          <div class="radio-feet">
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);"></div>
+          </div>
+        </div>
+
+        <div class="radio-grille">
+          <div class="eq-bars">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="track-info">
+          <div class="track-title" id="trackTitle">Cahaya - Tulus</div>
+          <div class="track-sub" id="trackSub">Untuk kiya yang kehadirannya selalu menerangi sekitarnya🌻</div>
+        </div>
+
+        <div class="radio-seek">
+          <span id="curTime">0:00</span>
+          <input type="range" id="seekBar" value="0" min="0" max="100" step="0.1">
+          <span id="durTime">0:00</span>
+        </div>
+
+        <div class="radio-controls">
+          <button class="btn-skip" id="btnBack" aria-label="Mundur 10 detik">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 6V2L4 8l7 6v-4c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H3c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+          </button>
+          <button class="btn-play" id="btnPlay" aria-label="Putar lagu">
+            <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="iconPause" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+          </button>
+          <button class="btn-skip" id="btnFwd" aria-label="Maju 10 detik">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 6V2l7 6-7 6v-4c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69-6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+          </button>
+        </div>
+
+        <div class="radio-volume">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <input type="range" id="volumeBar" min="0" max="1" step="0.01" value="0.8">
+        </div>
+      </div>
+
+      <div class="next-page-container" id="nextPageContainer">
+        <button class="btn-spinning-next" id="goToScrapbook">
+          lesgoo! ✨
+        </button>
+      </div>
+
+      <p class="radio-note">Tekan tombol Play untuk mulai mendengarkan lagu 🎶</p>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: SCRAPBOOK -->
+  <div class="screen hidden" id="scrapbookScreen">
+    <div class="header">
+      <p class="eyebrow">Memories Scrapbook</p>
+      <h1 class="title">Kiya's Journey</h1>
+    </div>
+
+    <div class="book-container">
+      <!-- PAGE 1 -->
+      <div class="page" id="page1" onclick="flipPage(1)">
+        <div class="front">
+          <div class="inner-border"></div>
+          <div class="tape"></div>
+          <span class="sticker" style="top: 14px; left: 16px; font-size: 0.95rem; transform: rotate(-15deg);">🌻</span>
+          <span class="sticker" style="top: 14px; right: 16px; font-size: 0.9rem; transform: rotate(15deg);">✨</span>
+          <span class="sticker" style="bottom: 84px; right: 14px; font-size: 0.95rem; transform: rotate(12deg);">🦋</span>
+          <span class="sticker" style="bottom: 86px; left: 14px; font-size: 0.85rem; transform: rotate(-10deg);">🌼</span>
+
+          <div style="text-align: center; margin-top: 4px; position: relative; z-index: 2;">
+            <span class="page-badge">Chapter 01 • Birthday Edition</span>
+            <h2 class="page-title-en" style="margin-top: 4px;">The Beginning of Light</h2>
+            <p class="handwriting" style="font-size: 0.95rem; margin-top: -2px;">~ a little keepsake made just for you ~</p>
+          </div>
+
+          <div class="photo-frame" style="transform: rotate(-1.5deg); margin: 4px 6px;">
+            <div class="washi-pink" style="top: -6px; left: -10px; transform: rotate(-28deg);"></div>
+            <div class="washi-gold" style="bottom: -5px; right: -10px; transform: rotate(-25deg);"></div>
+            <div class="photo-box" style="height: 132px;">
+              <img src="cover.jpeg" alt="Cover Photo" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <p class="caption">"You carry a warmth that turns ordinary days into gold."</p>
+          </div>
+        
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.6rem; color: var(--gold); position: relative; z-index: 2;">
+            <span>★ SPECIAL EDITION</span>
+            <span>tap tap kawan →</span>
+          </div>
+        </div>
+
+        <div class="back">
+          <div class="inner-border"></div>
+          <span class="sticker" style="top: 14px; right: 16px; font-size: 0.95rem;">🌙</span>
+          <span class="sticker" style="bottom: 24px; left: 16px; font-size: 0.9rem;">🌿</span>
+
+          <div style="text-align: center; margin-top: 8px; position: relative; z-index: 2;">
+            <span class="page-badge">Prologue</span>
+            <h3 class="page-title-en" style="margin-top: 6px;">Words for the Soul</h3>
+          </div>
+
+     <div style="display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 2;">
+           
+            
+           <!-- Bingkai otomatis menyesuaikan ukuran asli gambar portrait -->
+            <div class="photo-frame" style="transform: rotate(1.5deg); margin: 0; display: inline-block; width: 100%;">
+              <div class="photo-box" style="height: auto; background: #fff; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+                <img src="foto2.jpeg" alt="Foto Kenangan" style="width: auto; height: 100%; max-height: 190px; object-fit: contain; display: block; margin: 0 auto;">
+              </div>
+            </div>
+            <div class="note-box">
+                         "Every beautiful story begins with a single bright step—and yours is already a masterpiece in the making."
+                       </div>
+                     <div class="divider-ornament">✦ • ✦ • ✦</div>
+                     <p style="font-size: 0.62rem; text-align: center; color: var(--gold);">Page 01</p>
+                   </div>
+          </div>
+      </div>
+
+      <!-- PAGE 2 -->
+      <div class="page" id="page2" onclick="flipPage(2)">
+        <div class="front">
+          <div class="inner-border"></div>
+          <div class="tape" style="background: rgba(255, 198, 211, 0.85);"></div>
+          <span class="sticker" style="top: 12px; left: 14px; font-size: 0.9rem; transform: rotate(-12deg);">📸</span>
+          <span class="sticker" style="top: 12px; right: 14px; font-size: 0.9rem; transform: rotate(12deg);">🌷</span>
+          <span class="sticker" style="bottom: 76px; left: 50%; transform: translateX(-50%); font-size: 0.85rem;">✨</span>
+
+          <div style="text-align: center; margin-top: 4px; position: relative; z-index: 2;">
+            <span class="page-badge">Chapter 02 • Snapshots</span>
+            <h3 class="page-title-en" style="margin-top: 3px;">Captured Moments</h3>
+            <p class="handwriting" style="font-size: 0.92rem; margin-top: -2px;">little frames of pure happiness</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: relative; z-index: 2;">
+            <div class="photo-frame" style="transform: rotate(-2.5deg);">
+              <div class="washi-gold" style="top: -6px; left: 50%; transform: translateX(-50%) rotate(3deg); width: 38px; height: 11px;"></div>
+              <div class="photo-box" style="height: 92px;"> <img src="cantik4.jpg" alt="Cover Photo" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <p class="caption" style="font-size: 0.62rem;">"Hbd y lucu🤨"</p>
+            </div>
+            <div class="photo-frame" style="transform: rotate(2.5deg);">
+              <div class="washi-pink" style="top: -6px; left: 50%; transform: translateX(-50%) rotate(-3deg); width: 38px; height: 11px;"></div>
+              <div class="photo-box" style="height: 92px;"> <img src="cantik3.jpg" alt="Cover Photo" style="width: 100%; height: 100%; object-fit: cover;"></div>
+              <p class="caption" style="font-size: 0.62rem;">"WUATB gemas🙄"</p>
+            </div>
+          </div>
+
+          <div class="note-box" style="font-size: 0.69rem;">
+            "Collect moments, not things—because the best parts of life are the smiles we never want to forget."
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--gold); position: relative; z-index: 2;">
+            <span>♡ MEMORIES</span>
+            <span>tap tap kawan</span>
+          </div>
+        </div>
+
+        <div class="back">
+          <div class="inner-border"></div>
+          <span class="sticker" style="top: 14px; left: 16px; font-size: 0.95rem;">🤍</span>
+          <span class="sticker" style="top: 14px; right: 16px; font-size: 0.95rem;">🌸</span>
+          <span class="sticker" style="bottom: 26px; right: 18px; font-size: 0.95rem;">✨</span>
+
+          <div style="text-align: center; margin-top: 8px; position: relative; z-index: 2;">
+            <span class="page-badge">Gratitude</span>
+            <h3 class="page-title-en" style="margin-top: 6px;">Thank You</h3>
+          </div>
+
+          <div class="note-box" style="margin: auto 0; padding: 14px 12px; font-size: 0.74rem; text-align: center; border-left: 3px solid var(--gold);">
+            "Terima kasih sudah selalu kuat, selalu bertahan, dan selalu bahagia di tengah semua kesulitan yang ada"
+            <p class="handwriting" style="font-size: 1rem; margin-top: 6px; color: var(--purple-deep);">~ Forever grateful for your presence ~</p>
+          </div>
+
+          <div class="divider-ornament">❀ • ❀ • ❀</div>
+          <p style="font-size: 0.62rem; text-align: center; color: var(--gold);">Page 02</p>
+        </div>
+      </div>
+
+      <!-- PAGE 3 -->
+      <div class="page" id="page3">
+        <div class="front">
+          <div class="inner-border"></div>
+          <div class="tape"></div>
+          <span class="sticker" style="top: 12px; left: 14px; font-size: 0.95rem; transform: rotate(-15deg);">🎂</span>
+          <span class="sticker" style="top: 12px; right: 14px; font-size: 0.95rem; transform: rotate(15deg);">🎈</span>
+          <span class="sticker" style="bottom: 12px; left: 14px; font-size: 0.85rem;">🌟</span>
+          <span class="sticker" style="bottom: 12px; right: 14px; font-size: 0.85rem;">💐</span>
+
+          <div style="text-align: center; margin-top: 4px; position: relative; z-index: 2;">
+            <span class="page-badge">Final Chapter • Wishes</span>
+            <h3 class="page-title-en" style="margin-top: 3px;">Wishes & Prayers</h3>
+          </div>
+
+          <div class="photo-frame" style="transform: rotate(1deg); margin: 2px 8px;">
+            <div class="washi-gold" style="top: -6px; left: -8px; transform: rotate(-25deg); width: 42px;"></div>
+            <div class="washi-pink" style="top: -6px; right: -8px; transform: rotate(25deg); width: 42px;"></div>
+           <div class="photo-box" style="height: 105px;">
+  <img src="cantik2.jpg" alt="Closing Photo" style="width: 100%; height: 100%; object-fit: cover;">
+</div>
+            <p class="caption" style="font-size: 0.68rem;">"To a brand new chapter ✨"</p>
+          </div>
+
+          <div style="position: relative; z-index: 2; background: #fdf6e7; border: 1.5px solid #e2cbb0; padding: 10px 11px; border-radius: 10px; text-align: center; box-shadow: 0 3px 8px rgba(160,120,85,0.08);">
+            <p style="font-size: 0.72rem; color: var(--purple-deep); font-style: italic; line-height: 1.45;">
+              "Selamat menapaki babak baru dalam hidupmu, semoga nirmala senantiasa menyertai setiap langkahmu."
+            </p>
+            <div class="divider-ornament" style="margin: 4px 0 2px;">✦ ✦ ✦</div>
+            <span style="font-size: 0.65rem; color: var(--gold); font-weight: 600; letter-spacing: 0.5px; display: block;">
+              Happy Birthday, Azkiya 💖
+            </span>
+          </div>
+        </div>
+        <div class="back"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prevBtn" onclick="prevPage()" disabled>← Prev</button>
+      <button class="btn" id="nextBtn" onclick="nextPage()">Next →</button>
+    </div>
+
+    <a class="back-link" id="backToRadio">← Kembali ke Pemutar Musik</a>
+  </div>
+</div>
+
+<audio id="audio" src="cahaya.wav" preload="metadata"></audio>
+
+<script>
+  const audio = document.getElementById('audio');
+  const radioBody = document.getElementById('radioBody');
+  const btnPlay = document.getElementById('btnPlay');
+  const iconPlay = document.getElementById('iconPlay');
+  const iconPause = document.getElementById('iconPause');
+  const btnBack = document.getElementById('btnBack');
+  const btnFwd = document.getElementById('btnFwd');
+  const seekBar = document.getElementById('seekBar');
+  const volumeBar = document.getElementById('volumeBar');
+  const curTime = document.getElementById('curTime');
+  const durTime = document.getElementById('durTime');
+  const nextPageContainer = document.getElementById('nextPageContainer');
+
+  audio.volume = 0.8;
+  let fireworksStarted = false;
+  let timerTrigger = null;
+
+  function formatTime(sec){
+    if (!isFinite(sec)) return '0:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60).toString().padStart(2,'0');
+    return `${m}:${s}`;
+  }
+
+  function togglePlay(){
+    if (audio.paused){
+      audio.play().catch(() => {
+        alert('File audio "cahaya.wav" tidak ditemukan atau gagal diputar. Pastikan file berada di folder yang sama.');
+      });
+    } else {
+      audio.pause();
+    }
+  }
+
+  btnPlay.addEventListener('click', togglePlay);
+  btnBack.addEventListener('click', () => { audio.currentTime = Math.max(0, audio.currentTime - 10); });
+  btnFwd.addEventListener('click', () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
+
+  audio.addEventListener('play', () => {
+    iconPlay.style.display = 'none';
+    iconPause.style.display = 'block';
+    radioBody.classList.add('playing');
+
+    if (!fireworksStarted) {
+      fireworksStarted = true;
+      startFireworks();
+      timerTrigger = setTimeout(() => {
+        nextPageContainer.classList.add('show');
+      }, 1000);
+    }
+  });
+
+  audio.addEventListener('pause', () => {
+    iconPlay.style.display = 'block';
+    iconPause.style.display = 'none';
+    radioBody.classList.remove('playing');
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    seekBar.max = audio.duration || 0;
+    durTime.textContent = formatTime(audio.duration);
+  });
+  audio.addEventListener('timeupdate', () => {
+    seekBar.value = audio.currentTime;
+    curTime.textContent = formatTime(audio.currentTime);
+  });
+  audio.addEventListener('ended', () => {
+    radioBody.classList.remove('playing');
+  });
+
+  seekBar.addEventListener('input', () => { audio.currentTime = seekBar.value; });
+  volumeBar.addEventListener('input', () => { audio.volume = volumeBar.value; });
+
+  // --- SUPER SMOOTH SCREEN SWITCHING ---
+  const radioScreen = document.getElementById('radioScreen');
+  const scrapbookScreen = document.getElementById('scrapbookScreen');
+  const goToScrapbookBtn = document.getElementById('goToScrapbook');
+  const backToRadioBtn = document.getElementById('backToRadio');
+
+  goToScrapbookBtn.addEventListener('click', () => {
+    radioScreen.classList.add('hidden');
+    scrapbookScreen.classList.remove('hidden');
+  });
+
+  backToRadioBtn.addEventListener('click', () => {
+    scrapbookScreen.classList.add('hidden');
+    radioScreen.classList.remove('hidden');
+  });
+
+  // --- PAGE FLIP SOUND EFFECT ---
+  let audioCtx = null;
+  function playPageFlipSound() {
+    try {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      const bufferSize = audioCtx.sampleRate * 0.12;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(800, now);
+      filter.Q.setValueAtTime(1.5, now);
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+      whiteNoise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      whiteNoise.start(now);
+      whiteNoise.stop(now + 0.12);
+    } catch (e) {}
+  }
+
+  // --- SCRAPBOOK FLIP LOGIC ---
+  let currentStep = 0;
+  const pages = [
+    document.getElementById('page1'),
+    document.getElementById('page2'),
+    document.getElementById('page3')
+  ];
+
+  function updateButtons() {
+    document.getElementById('prevBtn').disabled = (currentStep === 0);
+    document.getElementById('nextBtn').disabled = (currentStep === 2);
+  }
+
+  function flipPage(pageNumber) {
+    if (pageNumber === 1 && currentStep === 0) {
+      pages[0].classList.add('flipped');
+      currentStep = 1;
+      playPageFlipSound();
+    } else if (pageNumber === 2 && currentStep === 1) {
+      pages[1].classList.add('flipped');
+      currentStep = 2;
+      playPageFlipSound();
+    }
+    updateButtons();
+  }
+
+  function nextPage() {
+    if (currentStep < 2) {
+      pages[currentStep].classList.add('flipped');
+      currentStep++;
+      playPageFlipSound();
+      updateButtons();
+    }
+  }
+
+  function prevPage() {
+    if (currentStep > 0) {
+      currentStep--;
+      pages[currentStep].classList.remove('flipped');
+      playPageFlipSound();
+      updateButtons();
+    }
+  }
+
+  // --- FIREWORKS CANVAS ---
+  const canvas = document.getElementById('fireworksCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class Particle {
+    constructor(x, y, color) {
+      this.x = x; this.y = y; this.color = color;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 6 + 2;
+      this.vx = Math.cos(angle) * speed;
+      this.vy = Math.sin(angle) * speed;
+      this.alpha = 1;
+      this.decay = Math.random() * 0.015 + 0.01;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      this.vy += 0.08;
+      this.alpha -= this.decay;
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  let particles = [];
+  const colors = ['#ffd166', '#ff8eaa', '#ffffff', '#c39b6b', '#d0b5e8', '#ffccd5'];
+
+  function createFirework() {
+    const x = Math.random() * (canvas.width - 200) + 100;
+    const y = Math.random() * (canvas.height / 2);
+    for (let i = 0; i < 50; i++) {
+      particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)]));
+    }
+  }
+
+  function startFireworks() {
+    createFirework();
+    setInterval(() => { createFirework(); }, 1200);
+  }
+
+  function animateFireworks() {
+    requestAnimationFrame(animateFireworks);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach((p, index) => {
+      p.update();
+      p.draw();
+      if (p.alpha <= 0) particles.splice(index, 1);
+    });
+  }
+  animateFireworks();
+</script>
+</body>
+</html>
