@@ -7,35 +7,62 @@
 <title>Collect Your Birthday Wishes</title>
 <style>
   :root { --ink:#172b4d; --cream:#fff8e8; --pink:#ff8eaa; --yellow:#ffd166; --blue:#8bd3f7; }
-  * { box-sizing:border-box; }
-  html,body { margin:0; width:100%; min-height:100%; background:#172b4d; color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,sans-serif; }
-  body { display:flex; justify-content:center; align-items:center; min-height:100dvh; overflow:hidden; }
-  #app { width:min(100vw,1100px); height:min(100dvh,720px); min-height:320px; position:relative; background:#9be3e8; overflow:hidden; border:4px solid #fff8e8; border-radius:18px; box-shadow:0 18px 60px #07152c88; }
-  canvas { width:100%; height:100%; display:block; image-rendering:pixelated; touch-action:none; }
-  .hud { position:absolute; inset:12px 14px auto; display:flex; justify-content:space-between; align-items:flex-start; pointer-events:none; gap:8px; z-index:3; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  html,body { margin:0; width:100%; height:100%; background:#172b4d; color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,sans-serif; overflow:hidden; }
+  body { display:flex; justify-content:center; align-items:center; min-height:100dvh; position:fixed; inset:0; }
+  
+  #app { 
+    width:100vw; 
+    height:100dvh; 
+    max-width:1100px; 
+    max-height:720px; 
+    position:relative; 
+    background:#9be3e8; 
+    overflow:hidden; 
+    display:flex;
+    flex-direction:column;
+  }
+  
+  canvas { width:100%; height:100%; display:block; image-rendering:pixelated; touch-action:none; object-fit:contain; }
+  
+  .hud { position:absolute; inset:8px 10px auto; display:flex; justify-content:space-between; align-items:flex-start; pointer-events:none; gap:6px; z-index:3; }
   .hud-right { display:flex; gap:6px; align-items:center; pointer-events:auto; }
-  .pill { background:#fff8e8ed; border:3px solid var(--ink); border-radius:12px; padding:6px 11px; font-weight:900; font-size:clamp(12px,2vw,17px); box-shadow:3px 3px 0 var(--ink); }
-  #muteBtn { cursor:pointer; padding:6px 10px; line-height:1; }
-  #levelName { max-width:44%; text-align:center; }
-  .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:18px; background:#172b4dcc; z-index:5; }
-  .panel { width:min(520px,100%); max-height:95%; overflow:auto; background:var(--cream); border:4px solid var(--ink); border-radius:22px; padding:clamp(18px,4vw,30px); text-align:center; box-shadow:8px 8px 0 #172b4d; }
-  h1 { margin:0 0 8px; line-height:1.05; font-size:clamp(27px,6vw,46px); color:#f05d82; text-shadow:2px 2px 0 var(--ink); }
-  h2 { margin:0 0 8px; font-size:clamp(21px,4vw,30px); }
-  p { line-height:1.5; margin:8px 0 15px; }
-  .mascot { font-size:clamp(52px,10vw,82px); margin:5px 0; filter:drop-shadow(3px 4px 0 #172b4d); }
-  button { border:3px solid var(--ink); border-radius:13px; background:var(--yellow); color:var(--ink); padding:11px 18px; font-size:16px; font-weight:900; cursor:pointer; box-shadow:4px 4px 0 var(--ink); touch-action:manipulation; }
-  button:active { transform:translate(3px,3px); box-shadow:1px 1px 0 var(--ink); }
-  .wish-card { background:#fff; border:3px dashed #f05d82; border-radius:15px; padding:13px; margin:12px 0; }
-  #toast { position:absolute; z-index:4; left:50%; top:22%; transform:translate(-50%,-10px); background:#fff8e8; border:3px solid var(--ink); border-radius:12px; padding:10px 14px; font-weight:900; text-align:center; opacity:0; transition:.2s; pointer-events:none; width:max-content; max-width:85%; }
+  .pill { background:#fff8e8ed; border:2px solid var(--ink); border-radius:10px; padding:4px 8px; font-weight:900; font-size:clamp(10px, 2.5vw, 15px); box-shadow:2px 2px 0 var(--ink); }
+  #muteBtn { cursor:pointer; padding:4px 8px; line-height:1; }
+  #levelName { max-width:38%; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  
+  .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:12px; background:#172b4dcc; z-index:5; }
+  .panel { width:min(480px,95%); max-height:90vh; overflow-y:auto; background:var(--cream); border:3px solid var(--ink); border-radius:18px; padding:clamp(14px, 4vw, 24px); text-align:center; box-shadow:6px 6px 0 #172b4d; }
+  
+  h1 { margin:0 0 6px; line-height:1.1; font-size:clamp(22px, 5vw, 38px); color:#f05d82; text-shadow:2px 2px 0 var(--ink); }
+  h2 { margin:0 0 6px; font-size:clamp(18px, 4vw, 26px); }
+  p { line-height:1.4; margin:6px 0 12px; font-size:clamp(12px, 2.5vw, 15px); }
+  .mascot { font-size:clamp(42px, 9vw, 70px); margin:2px 0; filter:drop-shadow(2px 3px 0 #172b4d); }
+  
+  button { border:3px solid var(--ink); border-radius:12px; background:var(--yellow); color:var(--ink); padding:10px 16px; font-size:15px; font-weight:900; cursor:pointer; box-shadow:3px 3px 0 var(--ink); touch-action:manipulation; }
+  button:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
+  
+  .wish-card { background:#fff; border:2px dashed #f05d82; border-radius:12px; padding:10px; margin:8px 0; font-size:13px; }
+  
+  #toast { position:absolute; z-index:4; left:50%; top:18%; transform:translate(-50%,-10px); background:#fff8e8; border:2px solid var(--ink); border-radius:10px; padding:8px 12px; font-weight:900; font-size:12px; text-align:center; opacity:0; transition:.2s; pointer-events:none; width:max-content; max-width:85%; }
   #toast.show { opacity:1; transform:translate(-50%,0); }
-  .touch { position:absolute; inset:auto 0 14px; display:flex; justify-content:space-between; padding:0 16px; z-index:4; pointer-events:none; }
-  .cluster { display:flex; gap:10px; pointer-events:auto; }
-  .touch button { width:clamp(48px,12vw,66px); height:clamp(48px,12vw,66px); padding:0; border-radius:18px; background:#fff8e8dd; font-size:24px; box-shadow:3px 3px 0 var(--ink); user-select:none; -webkit-user-select:none; }
-  .touch .jump { width:clamp(62px,15vw,78px); height:clamp(62px,15vw,78px); border-radius:50%; background:#ffd166ee; }
-  .hint { font-size:12px; color:#53627a; }
+  
+  /* Touch Controls yang Proporsional & Nyaman di HP */
+  .touch { position:absolute; inset:auto 0 10px; display:flex; justify-content:space-between; padding:0 12px; z-index:4; pointer-events:none; }
+  .cluster { display:flex; gap:8px; pointer-events:auto; }
+  .touch button { width:52px; height:52px; padding:0; border-radius:16px; background:#fff8e8ee; font-size:20px; box-shadow:2px 2px 0 var(--ink); user-select:none; -webkit-user-select:none; display:flex; align-items:center; justify-content:center; }
+  .touch .jump { width:58px; height:58px; border-radius:50%; background:#ffd166ee; }
+  
+  .hint { font-size:11px; color:#53627a; }
   #rotate { display:none; }
-  @media (orientation:portrait) and (max-width:800px) {
-    #rotate { display:block; position:absolute; z-index:6; top:8px; left:50%; transform:translateX(-50%); background:#172b4dcc; color:white; border-radius:20px; padding:5px 10px; font-size:11px; font-weight:800; pointer-events:none; }
+
+  @media (orientation:portrait) {
+    #rotate { display:block; position:absolute; z-index:6; top:6px; left:50%; transform:translateX(-50%); background:#172b4dcc; color:white; border-radius:15px; padding:4px 10px; font-size:10px; font-weight:800; pointer-events:none; text-align:center; white-space:nowrap; }
+  }
+  @media (max-height:430px) {
+    .panel { padding:10px 14px; max-height:95vh; }
+    .mascot { font-size:36px; }
+    p { margin:4px 0 8px; }
   }
 </style>
 </head>
@@ -51,7 +78,7 @@
     </div>
   </div>
   <div id="toast"></div>
-  <div id="rotate">↻ Putar HP ke landscape bang</div>
+  <div id="rotate">↻ Putar HP ke landscape agar lebih seru!</div>
   <div class="touch">
     <div class="cluster">
       <button data-key="left" aria-label="Kiri">◀</button>
